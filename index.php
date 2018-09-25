@@ -45,47 +45,63 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <div ng-app="GigsMod" ng-controller="GigsCtrl" class="md-padding" ng-cloak>
             <h1>Regular Comedy Gigs: Aotearoa/New Zealand</h1>
             <h2>Options</h2>
+            <div layout="row"><b>Format:&nbsp;</b>
             <md-radio-group layout="row" ng-model="Option.Selected" ng-change="Option.Changed()" class="my-radio">
-                <md-radio-button value="All" class="my-radio">All,</md-radio-button>
-                <md-radio-button value="Open" class="my-radio">Open Mics,</md-radio-button>
-                <md-radio-button value="Pro" class="my-radio">Pro,</md-radio-button>
-                <md-radio-button value="Both" class="my-radio">Pro with open spots.</md-radio-button>
-            </md-radio-group>
-            <h2>Areas</h2>
-            <p>Click on an area to show its gigs. Click on a gig to show its details.</p>
-            <div ng-repeat="area in Areas">
-                <h3>
-                    <div layout-wrap layout-gt-sm="row" >
-                      <div flex-gt-sm="50">
-                        <md-checkbox ng-model="area.Show" aria-label="{{area.Name}} Checkbox">
-                          {{area.Name}} ({{area.Gigs.length}})
-                        </md-checkbox>
-                      </div>
-                    </div>
-                </h3>
-                <div ng-repeat="gig in area.Gigs" ng-show="area.Show">
-                    <div flex-gt-sm="40">
-                        <p ng-hide="gig.Show">
-                            <md-checkbox ng-model="gig.Show" aria-label="{{gig.GigName}} Checkbox">
-                              {{gig.GigName}} {{gig.Frequency}} {{gig.DayofWeek}}
+                <md-radio-button value="All" class="my-radio">All</md-radio-button>
+                <md-radio-button value="Open" class="my-radio">Open Mics</md-radio-button>
+                <md-radio-button value="Pro" class="my-radio">Pro</md-radio-button>
+                <md-radio-button value="Both" class="my-radio">Pro with open spots</md-radio-button>
+            </md-radio-group></div><br/>
+            <div layout="row"><b>Type:&nbsp;</b>
+            <md-radio-group layout="row" ng-model="Option.SelectedType" ng-change="Option.Changed()" class="my-radio">
+                <md-radio-button value="All" class="my-radio">All</md-radio-button>
+                <md-radio-button value="{{type}}" class="my-radio" ng-repeat="type in Option.Types">{{type}}</md-radio-button>
+            </md-radio-group></div><br/>
+            <div layout="row"><b>Gendre:&nbsp;</b>
+            <md-radio-group layout="row" ng-model="Option.SelectedGendre" ng-change="Option.Changed()" class="my-radio">
+                <md-radio-button value="All" class="my-radio">All</md-radio-button>
+                <md-radio-button value="{{gendre}}" class="my-radio" ng-repeat="gendre in Option.Gendres">{{gendre}}</md-radio-button>
+            </md-radio-group></div>
+            <ng-show ng-show="Areas.length===0"><h2>No areas have events matching your criteria</a></h2></ng-show>
+            <ng-show ng-show="Areas.length!==0">
+                <h2>Areas</h2>
+                <p>Click on an area to show its gigs. Click on a gig to show its details.</p>
+                <div ng-repeat="area in Areas">
+                    <h3>
+                        <div layout-wrap layout-gt-sm="row" >
+                          <div flex-gt-sm="50">
+                            <md-checkbox ng-model="area.Show" aria-label="{{area.Name}} Checkbox">
+                              {{area.Name}} ({{area.Gigs.length}})
                             </md-checkbox>
-                        </p>
-                        <div ng-show="!!gig.Show" >
-                            <h4>
+                          </div>
+                        </div>
+                    </h3>
+                    <div ng-repeat="gig in area.Gigs" ng-show="area.Show">
+                        <div flex-gt-sm="40">
+                            <p ng-hide="gig.Show">
                                 <md-checkbox ng-model="gig.Show" aria-label="{{gig.GigName}} Checkbox">
                                   {{gig.GigName}} {{gig.Frequency}} {{gig.DayofWeek}}
                                 </md-checkbox>
-                            </h4>
-                            <p>Type: {{gig.Performers}}
-                                <br/>Location: {{gig.Location}}</p>
-                            <p>Links: <a href="{{gig.URL}}">Info</a><ng-bind-html ng-bind-html='gig.ContactHtml'></ng-bind-html>
-                                <ng-show ng-show="gig.PerformerSign_up!==''">,
-                                    Other: <a href="{{gig.PerformerSign_up}}">Performer Sign-up</a></ng-show></p>
-                                <p ng-show='gig.Notes !== ""'>Notes: {{gig.Notes}}</p>
+                            </p>
+                            <div ng-show="!!gig.Show" >
+                                <h4>
+                                    <md-checkbox ng-model="gig.Show" aria-label="{{gig.GigName}} Checkbox">
+                                      {{gig.GigName}} {{gig.Frequency}} {{gig.DayofWeek}}
+                                    </md-checkbox>
+                                </h4>
+                                <p>Format: {{gig.Performers}}<br/>
+                                   Type: {{gig.Type}}<br/>
+                                   Gendre: {{gig.Gendre}}<br/>
+                                   Location: {{gig.Location}}</p>
+                                <p>Links: <a href="{{gig.URL}}">Info</a><ng-bind-html ng-bind-html='gig.ContactHtml'></ng-bind-html>
+                                    <ng-show ng-show="gig.PerformerSign_up!==''">,
+                                        Other: <a href="{{gig.PerformerSign_up}}">Performer Sign-up</a></ng-show></p>
+                                    <p ng-show='gig.Notes !== ""'>Notes: {{gig.Notes}}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-        </div>
+            </div>
+        </ng-show>
         <h2>Fine print</h2>
         <p>This site is provided by <a href="https://juliaclement.com/">Julia Clement</a> as a public service.
             It started as an attempt to build a definitive list of regular comedy shows.

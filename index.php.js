@@ -22,6 +22,10 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
         Pro:  false,
         Both: false,
         Selected: 'All',
+        SelectedType: 'All',
+        Types: [],
+        SelectedGendre: 'All',
+        Gendres: [],
         Changed( ) {
             var Set = function( that, all, open, pro, semi ) {
                 that.All = all;
@@ -60,7 +64,10 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
         $scope.Areas.forEach( function(area) {
             area.filterGigs();
         });
+        $scope.Areas = $scope.Areas.filter(x=>x.Gigs.length > 0 );
     };
+    var workTypes=[];
+    var workGendres=[];
     $scope.AllAreas.forEach( function(area) {
         area.filterGigs = function() {
             if( $scope.Option.Open )
@@ -71,8 +78,17 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
                 this.Gigs=this.AllGigs.filter(x=>x.Both);
             else // Assume All
                 this.Gigs = this.AllGigs;
+            if( $scope.Option.SelectedGendre !=='All' ) {
+                this.Gigs=this.Gigs.filter(x=>$scope.Option.SelectedGendre===x.Gendre);
+            }
+            if( $scope.Option.SelectedType !=='All' ) {
+                this.Gigs=this.Gigs.filter(x=>$scope.Option.SelectedType===x.Type);
+            }
         };
         area.AllGigs.forEach( function( gig ){
+            // Build the Types & Gendres lists
+            workTypes[gig.Type] = gig.Type;
+            workGendres[gig.Gendre] = gig.Gendre;
             // Set the contact type string
             var contactString = gig.ContactPersonorURL.toLowerCase();
             var urlString = gig.URL.toLowerCase();
@@ -122,4 +138,14 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
     });
     // Initialise all gigs
     $scope.filterAreas();
+    // We've collected a unique list of Types & Gendres
+    // Convert to sorted arrays in Option
+    for( var x in workTypes) {
+        $scope.Option.Types.push(x);
+    };
+    $scope.Option.Types.sort();
+    for( var x in workGendres ) {
+        $scope.Option.Gendres.push(x);
+    };
+    $scope.Option.Gendres.sort();
 });
