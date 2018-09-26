@@ -1,4 +1,5 @@
 <?php
+    require_once "config.php";
     require_once "csvimport.php";
 ?><!DOCTYPE html>
 <!--
@@ -120,7 +121,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <script>
 var global={};
 global.allAreas = <?=json_encode($areas)?>;
-<?php require "index.php.js";?>
+<?php
+    // To prevent browsers caching javascript files, we include the 
+    // js in-line during development.
+    // Would probably benefit from some form of versioning in the file name
+    // but this is too trivial a project for that
+    if( Config::$Debug ) { 
+        require "index.js";
+    } else { ?>
 </script>
+<script src="index.js">
+<?php
+    }
+?>
+</script>
+
     </body>
 </html>

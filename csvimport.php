@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+require_once "config.php";
 class Area {
     var $Name;
     var $HasOpenGigs = false;
@@ -27,25 +28,24 @@ class Area {
         $this->Name = $name;
     }
 }
-define ('CSVFILE',"gigs.csv" );
-$filetime = filemtime(CSVFILE);
+$filetime = file_exists(Config::$CSVFileName) ? filemtime(Config::$CSVFileName) : 0;
 $age=time() - $filetime;
-if($age>300) {
+if($age>Config::$CacheFileName) {
     $ch = curl_init(); 
 
     // curl options
-    curl_setopt($ch, CURLOPT_URL, 'https://docs.google.com/spreadsheets/d/1-W8XLakqZ3Zlt7tTPfOJ5Gzy7-0Vdxv49FC7PcKHd8I/export?exportFormat=csv'); 
+    curl_setopt($ch, CURLOPT_URL, Config::$SourceURL); 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //return the transfer as a string 
 
     // Get & save the file
     $csvdata = curl_exec($ch);
-    file_put_contents(CSVFILE, $csvdata);
+    file_put_contents(Config::$CSVFileName, $csvdata);
 
     curl_close($ch);
     $lines = preg_split('/\R/', $csvdata );
     $updateTime="just now";
 } else {
-    $lines = file(CSVFILE);
+    $lines = file(Config::$CSVFileName);
     $seconds = $age % 60;
     $minutes = ($age-$seconds) / 60;
     $updateTime = sprintf("%d:%02d minutes ago", $minutes, $seconds);
