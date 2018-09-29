@@ -28,75 +28,73 @@ class Area {
         $this->Name = $name;
     }
 }
-$filetime = file_exists(Config::$CSVFileName) ? filemtime(Config::$CSVFileName) : 0;
+$filetime = file_exists(Config::CacheFileName) ? filemtime(Config::CacheFileName) : 0;
 $age=time() - $filetime;
-if($age>Config::$CacheFileName) {
+if($age>Config::CacheFileMaxAge) {
     $ch = curl_init(); 
 
     // curl options
-    curl_setopt($ch, CURLOPT_URL, Config::$SourceURL); 
+    curl_setopt($ch, CURLOPT_URL, Config::SourceURL); 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //return the transfer as a string 
 
     // Get & save the file
     $csvdata = curl_exec($ch);
-    file_put_contents(Config::$CSVFileName, $csvdata);
 
     curl_close($ch);
     $lines = preg_split('/\R/', $csvdata );
     $updateTime="just now";
+    $header = str_getcsv(array_shift($lines));
+    $columns = count($header);
+    $fields=str_replace( [' ','-'], ['','_'], $header);
+    $gigs=[];
+    $rawAreas=[];
+    $gigsByAreaIn=[];
+    $allLines=array_map('str_getcsv', $lines );
+    foreach( array_map('str_getcsv', $lines ) as $line ) {
+        $gig = new stdClass();
+        for( $i = 0; $i < $columns; ++$i ) {
+            $field = $fields[$i];
+            $gig->{$field} = $line[$i];
+        }
+        // Didn't collect this information initially, extract it from a
+        // controlled text field
+        $gig->Open = stripos( $gig->Performers, "open" ) !== false;
+        $gig->Pro = stripos( $gig->Performers, "pro" ) !== false;
+        $gig->Both = $gig->Open && $gig->Pro;
+        $gigs[]=$gig;
+        $area = $gig->Area;
+        $rawAreas[$area]=$area;
+        if( !array_key_exists( $area, $gigsByAreaIn)) {
+            $gigsByAreaIn[$area]=[];
+        }
+        $gigsByAreaIn[$area][]=$gig;
+    }
+    $areas = [];
+    $areasByName = [];
+    foreach( $rawAreas as $area ) {
+        $areaObject = new Area($area);
+        $areas[] = $areaObject;
+        $areasByName[ $area ] = $areaObject;
+    }
+    usort($areas, function($a,$b) {
+            return $a->Name <=> $b->Name;
+        });
+    foreach( $gigsByAreaIn as $areaName => $gigsOneArea ) {
+        usort($gigsOneArea, function($a,$b) {
+            return $a->GigName <=> $b->GigName;
+        });
+        $area = $areasByName[$areaName];
+        $area->AllGigs = $gigsOneArea;
+        foreach( $gigsOneArea as $gig ) {
+            $area->HasOpenGigs |= $gig->Open;
+            $area->HasProGigs |= $gig->Pro;
+            $area->HasBothGigs |= $gig->Both;
+        }
+    }
+    file_put_contents(Config::CacheFileName, json_encode( $areas ) );
 } else {
-    $lines = file(Config::$CSVFileName);
+    $areas = json_decode(file_get_contents(Config::CacheFileName));
     $seconds = $age % 60;
     $minutes = ($age-$seconds) / 60;
     $updateTime = sprintf("%d:%02d minutes ago", $minutes, $seconds);
-}
-$header = str_getcsv(array_shift($lines));
-$columns = count($header);
-$fields=str_replace( [' ','-'], ['','_'], $header);
-$gigs=[];
-$rawAreas=[];
-$gigsByAreaIn=[];
-$allLines=array_map('str_getcsv', $lines );
-foreach( array_map('str_getcsv', $lines ) as $line ) {
-    $gig = new stdClass();
-    for( $i = 0; $i < $columns; ++$i ) {
-        $field = $fields[$i];
-        $gig->{$field} = $line[$i];
-    }
-    // Didn't collect this information initially, extract it from a
-    // controlled text field
-    $gig->Open = stripos( $gig->Performers, "open" ) !== false;
-    $gig->Pro = stripos( $gig->Performers, "pro" ) !== false;
-    $gig->Both = $gig->Open && $gig->Pro;
-    $gigs[]=$gig;
-    $area = $gig->Area;
-    $rawAreas[$area]=$area;
-    if( !array_key_exists( $area, $gigsByAreaIn)) {
-        $gigsByAreaIn[$area]=[];
-    }
-    $gigsByAreaIn[$area][]=$gig;
-}
-$areas = [];
-$areasByName = [];
-foreach( $rawAreas as $area ) {
-    $areaObject = new Area($area);
-    $areas[] = $areaObject;
-    $areasByName[ $area ] = $areaObject;
-}
-usort($areas, function($a,$b) {
-        return $a->Name <=> $b->Name;
-    });
-$gigsByArea=[];
-foreach( $gigsByAreaIn as $areaName => $gigsOneArea ) {
-    usort($gigsOneArea, function($a,$b) {
-        return $a->GigName <=> $b->GigName;
-    });
-    $area = $areasByName[$areaName];
-    $area->AllGigs = $gigsOneArea;
-    foreach( $gigsOneArea as $gig ) {
-        $area->HasOpenGigs |= $gig->Open;
-        $area->HasProGigs |= $gig->Pro;
-        $area->HasBothGigs |= $gig->Both;
-    }
-    $gigsByArea[$area->Name] = $gigsOneArea;
 }

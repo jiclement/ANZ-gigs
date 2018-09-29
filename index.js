@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var app = angular.module("GigsMod", ["ngSanitize", 'ngMaterial']);//['ngMaterial', 'ngMessages']);
+var app = angular.module("GigsMod", ["ngSanitize", 'ngMaterial']);//['ngMessages']);
 app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDialog, $mdToast) {
     $scope.Option = {
         All:  true,

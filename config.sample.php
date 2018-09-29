@@ -19,15 +19,15 @@
 
 class Config {
     // Source URL to retrieve the data file from
-    static $SourceURL = 'https://docs.google.com/spreadsheets/d/1-W8XLakqZ3Zlt7tTPfOJ5Gzy7-0Vdxv49FC7PcKHd8I/export?exportFormat=csv';
+    const SourceURL = 'https://docs.google.com/spreadsheets/d/1-W8XLakqZ3Zlt7tTPfOJ5Gzy7-0Vdxv49FC7PcKHd8I/export?exportFormat=csv';
     
     // The filename including directory where the data file is stored.
     // Either the file or directory must be writable by the web server
-    static $CSVFileName = 'gigs.csv';
+    const CacheFileName = 'CacheFile.json';
     
     // How long to cache the datafile for
-    static $CacheFileName = 300;
+    const CacheFileMaxAge = 300;
     
     // Is debugging mode in effect? If so, the javascript is included in-line
-    static $Debug = false;
+    const Debug = false;
 }

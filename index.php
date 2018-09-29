@@ -126,7 +126,7 @@ global.allAreas = <?=json_encode($areas)?>;
     // js in-line during development.
     // Would probably benefit from some form of versioning in the file name
     // but this is too trivial a project for that
-    if( Config::$Debug ) { 
+    if( Config::Debug ) { 
         require "index.js";
     } else { ?>
 </script>
