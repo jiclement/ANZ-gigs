@@ -58,9 +58,11 @@ if($age>Config::CacheFileMaxAge) {
         }
         // Didn't collect this information initially, extract it from a
         // controlled text field
-        $gig->Open = stripos( $gig->Performers, "open" ) !== false;
+        $gig->Open = stripos( $gig->Performers, "open" ) !== false ||
+                     stripos( $gig->Performers, "any" ) !== false;
         $gig->Pro = stripos( $gig->Performers, "pro" ) !== false;
         $gig->Both = $gig->Open && $gig->Pro;
+        $gig->Other = ! ($gig->Open || $gig->Pro);
         $gigs[]=$gig;
         $area = $gig->Area;
         $rawAreas[$area]=$area;

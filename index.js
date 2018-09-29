@@ -21,30 +21,35 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
         Open: false,
         Pro:  false,
         Both: false,
+        Other: false,
         Selected: 'All',
         SelectedType: 'All',
         Types: [],
         SelectedGendre: 'All',
         Gendres: [],
         Changed( ) {
-            var Set = function( that, all, open, pro, semi ) {
+            var Set = function( that, all, open, pro, semi, other ) {
                 that.All = all;
                 that.Open = open;
                 that.Pro = pro;
                 that.Both = semi;
+                that.Other = other;
             };
             switch( this.Selected ) {
                 case 'Open' : 
-                    Set( this, false, true, false, false );
+                    Set( this, false, true, false, false, false );
                     break;
                 case 'Pro' : 
-                    Set( this, false, false, true, false );
+                    Set( this, false, false, true, false, false );
                     break;
                 case 'Both' : 
-                    Set( this, false, false, false, true );
+                    Set( this, false, false, false, true, false );
+                    break;
+                case 'Other' : 
+                    Set( this, false, false, false, false, true );
                     break;
                 default : 
-                    Set( this, true, false, false, false );
+                    Set( this, true, false, false, false, false );
                     break;
             }
             $scope.filterAreas();
@@ -76,6 +81,8 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
                 this.Gigs=this.AllGigs.filter(x=>x.Pro);
             else if( $scope.Option.Both )
                 this.Gigs=this.AllGigs.filter(x=>x.Both);
+            else if( $scope.Option.Other )
+                this.Gigs=this.AllGigs.filter(x=>x.Other);
             else // Assume All
                 this.Gigs = this.AllGigs;
             if( $scope.Option.SelectedGendre !=='All' ) {
@@ -94,10 +101,10 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
             var urlString = gig.URL.toLowerCase();
             var contactHtml='';
             if( contactString.includes("@")) {
-                contactHtml=$sanitize(', Contact: <a href="mailto:'+gig.ContactPersonorURL+'">email</a>');
+                contactHtml=$sanitize(', Contact: <a href="mailto:'+gig.ContactPersonorURL+'" rel="noopener noreferrer">email</a>');
             } else if( contactString.includes("https://")||contactString.includes("http://")) {
                 contactHtml=$sanitize(gig.ContactPersonorURL);
-                contactHtml = $sanitize(', Contact: <a href="'+gig.ContactPersonorURL+'">web page</a>');
+                contactHtml = $sanitize(', Contact: <a href="'+gig.ContactPersonorURL+'" rel="noopener noreferrer">web page</a>');
                 if( contactString.includes("https://www.facebook.com/") ||
                     contactString.includes("https://m.facebook.com/")) {
                     if( contactString.includes("https://www.facebook.com/")||
@@ -109,7 +116,7 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
                             gig.FbMessenger = $sanitize(part);
                             // a bit paranoid, but resanitize in case FbMessenger contains a string that is
                             // harmless on its own but affects the <a tag
-                            contactHtml=$sanitize(', Contact: <a href="https://m.me/'+gig.FbMessenger+'">via Facebook messenger</a>');
+                            contactHtml=$sanitize(', Contact: <a href="https://m.me/'+gig.FbMessenger+'" rel="noopener noreferrer">via Facebook messenger</a>');
                         }
                     }
                 }
@@ -125,7 +132,7 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
                         gig.FbMessenger = $sanitize(part);
                         // a bit paranoid, but resanitize in case FbMessenger contains a string that is
                         // harmless on its own but affects the <a tag
-                        contactHtml=$sanitize(', Contact: <a href="https://m.me/'+gig.FbMessenger+'">via Facebook messenger</a>');
+                        contactHtml=$sanitize(', Contact: <a href="https://m.me/'+gig.FbMessenger+'" rel="noopener noreferrer">via Facebook messenger</a>');
                     }
                 }
             } else if(contactString.length < 1 ) {

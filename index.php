@@ -52,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <md-radio-button value="Open" class="my-radio">Open Mics</md-radio-button>
                 <md-radio-button value="Pro" class="my-radio">Pro</md-radio-button>
                 <md-radio-button value="Both" class="my-radio">Pro with open spots</md-radio-button>
+                <md-radio-button value="Other" class="my-radio">Other descriptions</md-radio-button>
             </md-radio-group></div><br/>
             <div layout="row"><b>Type:&nbsp;</b>
             <md-radio-group layout="row" ng-model="Option.SelectedType" ng-change="Option.Changed()" class="my-radio">
