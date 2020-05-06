@@ -27,6 +27,7 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
         Types: [],
         SelectedGendre: 'All',
         Gendres: [],
+        ActiveSel: 'Yes',
         Changed( ) {
             var Set = function( that, all, open, pro, semi, other ) {
                 that.All = all;
@@ -90,6 +91,9 @@ app.controller("GigsCtrl", function($scope, $sce, $sanitize) { //,$http, $mdDial
             }
             if( $scope.Option.SelectedType !=='All' ) {
                 this.Gigs=this.Gigs.filter(x=>$scope.Option.SelectedType===x.Type);
+            }
+            if( $scope.Option.ActiveSel !=='All' ) {
+                this.Gigs=this.Gigs.filter(x=>$scope.Option.ActiveSel===x.Active);
             }
         };
         area.AllGigs.forEach( function( gig ){

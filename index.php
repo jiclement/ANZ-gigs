@@ -63,6 +63,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <md-radio-group layout="row" ng-model="Option.SelectedGendre" ng-change="Option.Changed()" class="my-radio">
                 <md-radio-button value="All" class="my-radio">All</md-radio-button>
                 <md-radio-button value="{{gendre}}" class="my-radio" ng-repeat="gendre in Option.Gendres">{{gendre}}</md-radio-button>
+            </md-radio-group></div></b>
+            <div layout="row"><b>Active:&nbsp;</b>
+            <md-radio-group layout="row" ng-model="Option.ActiveSel" ng-change="Option.Changed()" class="my-radio">
+                <md-radio-button value="All" class="my-radio">All</md-radio-button>
+                <md-radio-button value="Yes" class="my-radio">Yes</md-radio-button>
+                <md-radio-button value="No" class="my-radio">No</md-radio-button>
             </md-radio-group></div>
             <ng-show ng-show="Areas.length===0"><h2>No areas have events matching your criteria</a></h2></ng-show>
             <ng-show ng-show="Areas.length!==0">
